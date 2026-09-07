@@ -1,6 +1,7 @@
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
+from telegram.types import InputRichMessage, InputRichBlockTable
 
 # ✅ TOKEN
 TOKEN = "8609710969:AAFeYU681TDYC2youGJ6TEmlzfyZvERUG-s"
@@ -30,14 +31,32 @@ def main_keyboard():
     ]
     return InlineKeyboardMarkup(keyboard)
 
+# ─── ALPHA jadvali ────────────────────────────────────────────────────────────
+def build_alpha_table():
+    return InputRichBlockTable(
+        cells=[
+            [{"text": ALPHA_DATA["title"], "is_header": True, "align": "center"}],
+            [{"text": f"🌐 {ALPHA_DATA['domain']}", "align": "center"}],
+            [{"text": f"📋 {ALPHA_DATA['plan']}", "align": "center"}],
+            [{"text": f"👥 Akkauntlar: {ALPHA_DATA['accounts']}", "align": "center"}],
+            [{"text": f"📊 Jami olish: {ALPHA_DATA['total_claims']}", "align": "center"}],
+        ],
+        is_bordered=True,
+        is_striped=True,
+    )
+
 # ─── /start ──────────────────────────────────────────────────────────────────
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    alpha_table = build_alpha_table()
+    
+    rich_message = InputRichMessage(
+        blocks=[
+            alpha_table,
+        ]
+    )
+    
     await update.message.reply_text(
-        f"📌 {ALPHA_DATA['title']}\n"
-        f"🌐 {ALPHA_DATA['domain']}\n"
-        f"📋 {ALPHA_DATA['plan']}\n"
-        f"👥 Akkauntlar: {ALPHA_DATA['accounts']}\n"
-        f"📊 Jami olish: {ALPHA_DATA['total_claims']}\n\n"
+        "🔹 Bu loyiha orqali Telegram botlaringizni web ilovamiz orqali yarating!\n\n"
         "Login: No\n"
         "Parol:",
         reply_markup=main_keyboard()
