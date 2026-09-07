@@ -1,7 +1,6 @@
 import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputRichMessage, InputRichBlockTable
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
-from telegram.types import InputRichMessage, InputRichBlockTable
 
 # ✅ TOKEN
 TOKEN = "8609710969:AAFeYU681TDYC2youGJ6TEmlzfyZvERUG-s"
@@ -49,16 +48,10 @@ def build_alpha_table():
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     alpha_table = build_alpha_table()
     
-    rich_message = InputRichMessage(
-        blocks=[
-            alpha_table,
-        ]
-    )
+    rich_message = InputRichMessage(blocks=[alpha_table])
     
-    await update.message.reply_text(
-        "🔹 Bu loyiha orqali Telegram botlaringizni web ilovamiz orqali yarating!\n\n"
-        "Login: No\n"
-        "Parol:",
+    await update.message.reply_rich_message(
+        rich_message=rich_message,
         reply_markup=main_keyboard()
     )
 
