@@ -1,103 +1,113 @@
 import logging
-from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
 # ✅ TOKEN
-TOKEN = "8609710969:AAFeYU681TDYC2youGJ6TEmlzfyZvERUG-s"
+TOKEN = "7268818327:AAHvq5JpKxxxxxxxxxxxxxxxxxxx"
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 
+# ✅ Inline tugmalar
 def main_keyboard():
     keyboard = [
-        [KeyboardButton("🆕 Bot yaratish"), KeyboardButton("📋 Botlarim")],
-        [KeyboardButton("💰 Balans"), KeyboardButton("👥 Referal")],
-        [KeyboardButton("🌐 Web ilova"), KeyboardButton("❓ Yordam")],
-        [KeyboardButton("⚙️ Sozlamalar"), KeyboardButton("🛠 Maker Bo'lim")],
-        [KeyboardButton("✉️ Xabar")]
+        [InlineKeyboardButton("🆕 Bot yaratish", callback_data="create_bot")],
+        [InlineKeyboardButton("📋 Botlarim", callback_data="my_bots"), 
+         InlineKeyboardButton("💰 Balans", callback_data="balance")],
+        [InlineKeyboardButton("👥 Referal", callback_data="referal"), 
+         InlineKeyboardButton("🌐 Web ilova", callback_data="web_app")],
+        [InlineKeyboardButton("❓ Yordam", callback_data="help"), 
+         InlineKeyboardButton("⚙️ Sozlamalar", callback_data="settings")],
+        [InlineKeyboardButton("🛠 Maker Bo'lim", callback_data="maker")],
+        [InlineKeyboardButton("✉️ Xabar", callback_data="message")]
     ]
-    return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    return InlineKeyboardMarkup(keyboard)
 
+# ✅ /start komandasi
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "👋 Xush kelibsiz!\n\n"
         "📌 Makefy Bot | MAKER bot\n"
         "🚀 20 Gbit/s tezkor Web Platforma\n\n"
-        "🔹 Bu loyiha orqali Telegram botlaringizni web ilovamiz orqali yarating!\n"
-        "🔹 Quyidagi tugmalardan foydalaning:\n\n"
+        "🔹 Bu loyiha orqali Telegram botlaringizni web ilovamiz orqali yarating!\n\n"
         "Login: No\n"
         "Parol:",
         reply_markup=main_keyboard()
     )
 
-async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text
+# ✅ Tugmalarni boshqarish
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
     
-    if text == "🆕 Bot yaratish":
-        await update.message.reply_text(
+    data = query.data
+    
+    if data == "create_bot":
+        await query.edit_message_text(
             "🤖 Yangi bot yaratish\n\n"
             "Bot nomi va tokenini kiriting:",
             reply_markup=main_keyboard()
         )
     
-    elif text == "📋 Botlarim":
-        await update.message.reply_text(
+    elif data == "my_bots":
+        await query.edit_message_text(
             "📋 Sizning botlaringiz:\n\n"
             "Hali bot yaratilmagan.",
             reply_markup=main_keyboard()
         )
     
-    elif text == "💰 Balans":
-        await update.message.reply_text(
+    elif data == "balance":
+        await query.edit_message_text(
             "💰 Balans: 0 so'm\n"
             "💳 To'lov qilish: [link]",
             reply_markup=main_keyboard()
         )
     
-    elif text == "👥 Referal":
-        await update.message.reply_text(
+    elif data == "referal":
+        await query.edit_message_text(
             "👥 Referal dasturi\n\n"
             "🔗 Havolangiz: https://t.me/makefy_bot?start=ref_123\n"
             "👤 Do'stingiz kelganda: +100 so'm",
             reply_markup=main_keyboard()
         )
     
-    elif text == "🌐 Web ilova":
-        await update.message.reply_text(
+    elif data == "web_app":
+        await query.edit_message_text(
             "🌐 Web ilova\n\n"
             "Botni to'liq boshqarish uchun:\n"
-            "🔗 https://makefy.com/dashboard",
+            "🔗 https://makefy.com/dashboard\n\n"
+            "👇 Pastdagi tugmalardan foydalaning:",
             reply_markup=main_keyboard()
         )
     
-    elif text == "❓ Yordam":
-        await update.message.reply_text(
+    elif data == "help":
+        await query.edit_message_text(
             "❓ Yordam\n\n"
             "📞 Admin: @makefy_admin\n"
             "📧 Email: support@makefy.com",
             reply_markup=main_keyboard()
         )
     
-    elif text == "⚙️ Sozlamalar":
-        await update.message.reply_text(
+    elif data == "settings":
+        await query.edit_message_text(
             "⚙️ Sozlamalar\n\n"
             "🔹 Til: O'zbekcha\n"
             "🔹 Xabarlar: Yoqilgan",
             reply_markup=main_keyboard()
         )
     
-    elif text == "🛠 Maker Bo'lim":
-        await update.message.reply_text(
+    elif data == "maker":
+        await query.edit_message_text(
             "🛠 Maker Bo'lim\n\n"
             "🔹 Faqat adminlar uchun!\n"
             "🔹 Bot sozlamalari va statistikalar.",
             reply_markup=main_keyboard()
         )
     
-    elif text == "✉️ Xabar":
-        await update.message.reply_text(
+    elif data == "message":
+        await query.edit_message_text(
             "✉️ Xabar yozish\n\n"
             "Adminlarga xabar yuboring:",
             reply_markup=main_keyboard()
@@ -105,8 +115,9 @@ async def handle_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     app = Application.builder().token(TOKEN).build()
+    
     app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_buttons))
+    app.add_handler(CallbackQueryHandler(button_handler))
     
     print("🤖 Makefy Bot ishga tushdi...")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
