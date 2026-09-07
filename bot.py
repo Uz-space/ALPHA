@@ -10,6 +10,16 @@ logging.basicConfig(
     level=logging.INFO
 )
 
+# ─── ALPHA ma'lumotlari ──────────────────────────────────────────────────────
+ALPHA_DATA = {
+    "title": "ALPHA",
+    "domain": "sctg.xyz",
+    "plan": "Trial",
+    "accounts": 0,
+    "total_claims": 0,
+}
+
+# ─── Tugmalar (faqat ko'rinish, ishlamaydi) ─────────────────────────────────
 def main_keyboard():
     keyboard = [
         [InlineKeyboardButton("🆕 Bot yaratish", callback_data="no")],
@@ -20,22 +30,25 @@ def main_keyboard():
     ]
     return InlineKeyboardMarkup(keyboard)
 
+# ─── /start ──────────────────────────────────────────────────────────────────
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "👋 Xush kelibsiz!\n\n"
-        "📌 Makefy Bot | MAKER bot\n"
-        "🚀 20 Gbit/s tezkor Web Platforma\n\n"
-        "🔹 Bu loyiha orqali Telegram botlaringizni web ilovamiz orqali yarating!\n\n"
+        f"📌 {ALPHA_DATA['title']}\n"
+        f"🌐 {ALPHA_DATA['domain']}\n"
+        f"📋 {ALPHA_DATA['plan']}\n"
+        f"👥 Akkauntlar: {ALPHA_DATA['accounts']}\n"
+        f"📊 Jami olish: {ALPHA_DATA['total_claims']}\n\n"
         "Login: No\n"
         "Parol:",
         reply_markup=main_keyboard()
     )
 
-# ✅ Hech nima qilmaydigan handler (faqat "hech nima" deb javob qaytaradi)
+# ─── Tugmalar bosilganda (hech narsa qilmaydi) ─────────────────────────────
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer("⛔ Bu tugma ishlamaydi!", show_alert=False)
 
+# ─── Botni ishga tushirish ──────────────────────────────────────────────────
 def main():
     app = Application.builder().token(TOKEN).build()
     
