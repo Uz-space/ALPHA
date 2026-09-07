@@ -2,8 +2,8 @@ import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
-# ✅ TOKENNI TO'G'RI YOZING
-TOKEN = "7268818327:AAFeYU681TDYC2youGJ6TEmlzfyZvERUG-s"  # Shu tokenni ishlating!
+# ✅ TOKEN (ishlaydigan)
+TOKEN = "8609710969:AAFeYU681TDYC2youGJ6TEmlzfyZvERUG-s"
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
