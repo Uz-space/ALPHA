@@ -1,16 +1,22 @@
+import asyncio
 import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputRichMessage, InputRichBlockTable
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
+from aiogram import Bot, Dispatcher, types
+from aiogram.filters import CommandStart
+from aiogram.types import (
+    InputRichMessage, 
+    InputRichBlockTable, 
+    InlineKeyboardMarkup, 
+    InlineKeyboardButton
+)
+from aiogram.enums import ButtonStyle
 
-# ✅ TOKEN
 TOKEN = "8609710969:AAFeYU681TDYC2youGJ6TEmlzfyZvERUG-s"
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
+logging.basicConfig(level=logging.INFO)
 
-# ─── ALPHA ma'lumotlari ──────────────────────────────────────────────────────
+bot = Bot(token=TOKEN)
+dp = Dispatcher()
+
 ALPHA_DATA = {
     "title": "ALPHA",
     "domain": "sctg.xyz",
@@ -19,56 +25,59 @@ ALPHA_DATA = {
     "total_claims": 0,
 }
 
-# ─── Tugmalar (faqat ko'rinish, ishlamaydi) ─────────────────────────────────
 def main_keyboard():
-    keyboard = [
-        [InlineKeyboardButton("🆕 Bot yaratish", callback_data="no")],
-        [InlineKeyboardButton("💰 Balans", callback_data="no"), 
-         InlineKeyboardButton("📋 Botlarim", callback_data="no")],
-        [InlineKeyboardButton("⚙️ Sozlamalar", callback_data="no"), 
-         InlineKeyboardButton("❓ Yordam", callback_data="no")]
-    ]
-    return InlineKeyboardMarkup(keyboard)
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🆕 Bot yaratish", callback_data="no")],
+        [InlineKeyboardButton(text="💰 Balans", callback_data="no"), 
+         InlineKeyboardButton(text="📋 Botlarim", callback_data="no")],
+        [InlineKeyboardButton(text="⚙️ Sozlamalar", callback_data="no"), 
+         InlineKeyboardButton(text="❓ Yordam", callback_data="no")]
+    ])
+    return keyboard
 
 # ─── ALPHA jadvali ────────────────────────────────────────────────────────────
 def build_alpha_table():
     return InputRichBlockTable(
         cells=[
-            [{"text": ALPHA_DATA["title"], "is_header": True, "align": "center"}],
-            [{"text": f"🌐 {ALPHA_DATA['domain']}", "align": "center"}],
-            [{"text": f"📋 {ALPHA_DATA['plan']}", "align": "center"}],
-            [{"text": f"👥 Akkauntlar: {ALPHA_DATA['accounts']}", "align": "center"}],
-            [{"text": f"📊 Jami olish: {ALPHA_DATA['total_claims']}", "align": "center"}],
+            [
+                {"text": ALPHA_DATA["title"], "is_header": True, "align": "center"}
+            ],
+            [
+                {"text": f"🌐 {ALPHA_DATA['domain']}", "align": "center"}
+            ],
+            [
+                {"text": f"📋 {ALPHA_DATA['plan']}", "align": "center"}
+            ],
+            [
+                {"text": f"👥 Akkauntlar: {ALPHA_DATA['accounts']}", "align": "center"}
+            ],
+            [
+                {"text": f"📊 Jami olish: {ALPHA_DATA['total_claims']}", "align": "center"}
+            ],
         ],
         is_bordered=True,
         is_striped=True,
     )
 
-# ─── /start ──────────────────────────────────────────────────────────────────
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    alpha_table = build_alpha_table()
+@dp.message(CommandStart())
+async def start(message: types.Message):
+    rich_message = InputRichMessage(
+        blocks=[build_alpha_table()]
+    )
     
-    rich_message = InputRichMessage(blocks=[alpha_table])
-    
-    await update.message.reply_rich_message(
+    # Rich Message jo'natish
+    await message.answer_rich(
         rich_message=rich_message,
         reply_markup=main_keyboard()
     )
 
-# ─── Tugmalar bosilganda (hech narsa qilmaydi) ─────────────────────────────
-async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer("⛔ Bu tugma ishlamaydi!", show_alert=False)
+# ─── Tugmalar bosilganda ──────────────────────────────────────────────────────
+@dp.callback_query(lambda c: c.data == "no")
+async def no_button(callback: types.CallbackQuery):
+    await callback.answer("⛔ Bu tugma ishlamaydi!", show_alert=False)
 
-# ─── Botni ishga tushirish ──────────────────────────────────────────────────
-def main():
-    app = Application.builder().token(TOKEN).build()
-    
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(button_handler))
-    
-    print("🤖 Makefy Bot ishga tushdi...")
-    app.run_polling(allowed_updates=Update.ALL_TYPES)
+async def main():
+    await dp.start_polling(bot)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
