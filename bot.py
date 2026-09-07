@@ -3,7 +3,7 @@ from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
 # ✅ TOKENNI TO'G'RIDAN-TO'G'RI YOZING
-TOKEN = "7268818327:AAHvq5JpKxxxxxxxxxxxxxxxxxxx"  # O'z tokenizni yozing
+TOKEN = "8609710969:AAFeYU681TDYC2youGJ6TEmlzfyZvERUG-s"  # O'z tokenizni yozing
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
